@@ -1,18 +1,16 @@
 #settings.py
 import os
 from pathlib import Path
+from decouple import config
+
 
 
 BASE_DIR =  os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-
-SECRET_KEY = 'django-insecure-mla7k)i*4bt++8kn$q+-g3yc9t!iowflor)cag4+=lo4bbbj6='
-
-
-DEBUG = True
-
-ALLOWED_HOSTS = []
+DEBUG = config('DEBUG', default=False, cast=bool)
+SECRET_KEY = config('SECRET_KEY')
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
 
 
 # Application definition
@@ -35,6 +33,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
 ]
 
 ROOT_URLCONF = 'UTEC.urls'
@@ -109,7 +108,10 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),  # Ruta de la carpeta static
 ]
 STATIC_URL = '/static/'
-
+BASE_DIR = Path(__file__).resolve().parent.parent
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
@@ -118,3 +120,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'index' 
 LOGOUT_REDIRECT_URL = 'home'
+
+SECURE_SSL_REDIRECT = True
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://UTEC.dev",
+    "https://www.pythonizado.com",
+    "https://pythonizado.com",
+]
