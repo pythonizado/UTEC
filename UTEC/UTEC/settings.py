@@ -5,8 +5,8 @@ from decouple import config
 
 
 
-BASE_DIR =  os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
+#BASE_DIR =  os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 SECRET_KEY = config('SECRET_KEY')
@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'diagnostico'
+    
 ]
 
 MIDDLEWARE = [
@@ -92,8 +93,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-ar'
 
-LANGUAGE = 'en-us'
-
 TIME_ZONE = 'America/Montevideo'
 
 USE_I18N = True
@@ -104,27 +103,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
-STATICFILES_DIRS = [
+'''STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),  # Ruta de la carpeta static
-]
-STATIC_URL = '/static/'
-BASE_DIR = Path(__file__).resolve().parent.parent
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
-MEDIA_ROOT = BASE_DIR / 'media'
+]'''
 
-# Default primary key field type
-# https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    BASE_DIR / 'static',  # Ruta de la carpeta static
+]
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
+
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'index' 
 LOGOUT_REDIRECT_URL = 'home'
 
-SECURE_SSL_REDIRECT = True
+
 
 CSRF_TRUSTED_ORIGINS = [
     "https://UTEC.dev",
     "https://www.pythonizado.com",
     "https://pythonizado.com",
+    "https://127.0.0.1",
+    "https://localhost",
+    "http://127.0.0.1",
+    "http://localhost"
 ]
