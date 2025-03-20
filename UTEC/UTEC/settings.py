@@ -8,7 +8,7 @@ from decouple import config
 #BASE_DIR =  os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-DEBUG = config('DEBUG', default=False, cast=bool)
+DEBUG = config('DEBUG', default=True, cast=bool)
 SECRET_KEY = config('SECRET_KEY')
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
 
@@ -126,9 +126,6 @@ LOGOUT_REDIRECT_URL = 'home'
 
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://UTEC.dev",
-    "https://www.pythonizado.com",
-    "https://pythonizado.com",
     "https://127.0.0.1",
     "https://localhost",
     "http://127.0.0.1",

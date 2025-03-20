@@ -25,5 +25,6 @@ urlpatterns = [
     path('informes/correctas_por_bloque/', views.correctas_por_bloque, name='correctas_por_bloque'),
     path('informes/comparacion_bloques/', views.comparacion_bloques, name='comparacion_bloques'),
     path('buscar_estudiante/', views.buscar_estudiante, name='buscar_estudiante'),
+    path('todito/', views.todito, name='todito'),
     path('actualizar_respuestas/<int:estudiante_id>/', views.actualizar_respuestas, name='actualizar_respuestas'),
 ]

@@ -647,3 +647,64 @@ def actualizar_respuestas(request, estudiante_id):
         'preguntas_forms': preguntas_forms
     })
 
+def todito(request):
+    # Obtener parámetros de filtro (carrera y exportar a Excel)
+    carrera_id = request.GET.get('carrera')  # Puede ser None o una cadena vacía
+    exportar_excel = request.GET.get('exportar_excel')
+
+    # Inicializar el queryset de respuestas
+    respuestas = Respuesta.objects.all()
+
+    # Filtrar por carrera si se selecciona una (y no es "Todas")
+    if carrera_id and carrera_id != "":  # Si se selecciona una carrera específica
+        respuestas = respuestas.filter(estudianteFK__carrera_id=carrera_id)
+
+    # Agrupar respuestas por estudiante
+    estudiantes_con_respuestas = {}
+    for respuesta in respuestas:
+        estudiante = respuesta.estudianteFK
+        if estudiante not in estudiantes_con_respuestas:
+            estudiantes_con_respuestas[estudiante] = {
+                'carrera': estudiante.carrera.nombre,  # Agregar la carrera del estudiante
+                'respuestas': []
+            }
+        estudiantes_con_respuestas[estudiante]['respuestas'].append(respuesta)
+
+    # Crear un rango de números para las 24 preguntas
+    preguntas_range = range(1, 25)  # Del 1 al 24
+
+    # Exportar a Excel si se solicita
+    if exportar_excel:
+        # Crear un libro de Excel y una hoja
+        wb = Workbook()
+        ws = wb.active
+        ws.title = "Todito"
+
+        # Agregar encabezados
+        encabezados = ["Nombre del Estudiante", "Documento del Estudiante", "Carrera"]
+        for i in preguntas_range:
+            encabezados.append(f"Pregunta {i}")
+        ws.append(encabezados)
+
+        # Agregar datos
+        for estudiante, datos in estudiantes_con_respuestas.items():
+            fila = [estudiante.nombre, estudiante.documento, datos['carrera']]  # Incluir la carrera
+            for i in preguntas_range:
+                respuesta_pregunta = next((r.seleccion for r in datos['respuestas'] if r.preguntaFK.numero == i), "N/A")
+                fila.append(respuesta_pregunta)
+            ws.append(fila)
+
+        # Crear una respuesta HTTP con el archivo Excel
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = 'attachment; filename=todito.xlsx'
+        wb.save(response)
+
+        return response
+
+    # Renderizar la plantilla con los datos
+    return render(request, 'diagnostico/todo.html', {
+        'carreras': Carrera.objects.all(),  # Pasar todas las carreras
+        'estudiantes_con_respuestas': estudiantes_con_respuestas,
+        'carrera_seleccionada': carrera_id,  # No convertir a int si es None
+        'preguntas_range': preguntas_range,  # Pasar el rango al template
+    })
